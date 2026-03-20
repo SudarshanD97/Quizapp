@@ -5,6 +5,7 @@ interface SettingsScreenProps {
   onContinue: (settings: Omit<QuizSettings, 'apiKey'>) => void | Promise<void>;
   initialSettings?: Omit<QuizSettings, 'apiKey'>;
   onBack?: () => void;
+  error?: string;
 }
 
 const CATEGORIES: Category[] = [
@@ -27,7 +28,7 @@ const TIME_OPTIONS: { value: TimeLimit; label: string }[] = [
   { value: 60, label: '60s' },
 ];
 
-export default function SettingsScreen({ onContinue, initialSettings, onBack: _onBack }: SettingsScreenProps) {
+export default function SettingsScreen({ onContinue, initialSettings, onBack: _onBack, error }: SettingsScreenProps) {
   const [topic, setTopic] = useState(initialSettings?.topic ?? '');
   const [category, setCategory] = useState<Category>(initialSettings?.category ?? 'Technology');
   const [difficulty, setDifficulty] = useState<Difficulty>(initialSettings?.difficulty ?? 'medium');
@@ -62,6 +63,19 @@ export default function SettingsScreen({ onContinue, initialSettings, onBack: _o
       {/* Main Card */}
       <div className="w-full max-w-3xl rounded-3xl p-8 md:p-10 shadow-sm animate-fade-in-up delay-100"
         style={{ background: 'white', boxShadow: '0 2px 24px rgba(0,0,0,0.07)' }}>
+        {error && (
+          <div
+            className="mb-6 flex items-center gap-3 px-5 py-4 rounded-2xl"
+            style={{ background: '#fff5f5', border: '1.5px solid #ff3b3020' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span className="text-sm font-medium" style={{ color: '#ff3b30' }}>{error}</span>
+          </div>
+        )}
 
         {/* TOPIC */}
         <section className="mb-8">

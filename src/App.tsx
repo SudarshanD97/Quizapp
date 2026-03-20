@@ -64,7 +64,7 @@ export default function App() {
     (source: AppScreen) => {
       // "loading" is an intermediate state; when returning from quiz, skip it.
       if (source === 'quiz' && prevScreen === 'loading') {
-        navigate(apiKey.trim() ? 'settings' : 'apikey');
+        navigate('settings');
         return;
       }
       navigate(prevScreen ?? 'landing');
@@ -89,7 +89,7 @@ export default function App() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to generate questions. Please try again.';
       setError(msg);
-      navigate('apikey');
+      navigate('settings');
     }
   }, []);
 
@@ -97,7 +97,8 @@ export default function App() {
     setSettings(s);
 
     if (!apiKey.trim()) {
-      navigate('apikey');
+      setError('Missing Groq API key. Configure it in `.env.local` as `VITE_GROQ_API_KEY`.');
+      navigate('settings');
       return;
     }
 
@@ -157,7 +158,8 @@ export default function App() {
   const handleCollabHost = useCallback(async (code: string, collabSettings: Omit<QuizSettings, 'apiKey'>) => {
     setSettings({ ...collabSettings, collabCode: code } as any);
     if (!apiKey) {
-      navigate('apikey');
+      setError('Missing Groq API key. Configure it in `.env.local` as `VITE_GROQ_API_KEY`.');
+      navigate('settings');
       return;
     }
     await startQuiz(apiKey, { ...collabSettings, collabCode: code } as any);
@@ -195,6 +197,7 @@ export default function App() {
           onContinue={handleSettingsDone}
           initialSettings={settings}
           onBack={() => navigate('landing')}
+          error={error}
         />
       )}
 
@@ -214,15 +217,22 @@ export default function App() {
         />
       )}
 
-      {screen === 'quiz' && questions.length > 0 && (
-        <QuizScreen
-          questions={questions}
-          settings={{ ...settings, apiKey }}
-          onComplete={handleQuizComplete}
-          userName={user?.displayName}
-          userPhoto={user?.photoURL}
-          onBack={() => handleBack('quiz')}
-        />
+      {screen === 'quiz' && (
+        questions.length > 0 ? (
+          <QuizScreen
+            questions={questions}
+            settings={{ ...settings, apiKey }}
+            onComplete={handleQuizComplete}
+            userName={user?.displayName}
+            userPhoto={user?.photoURL}
+            onBack={() => handleBack('quiz')}
+          />
+        ) : (
+          <LoadingScreen
+            settings={settings as QuizSettings}
+            onBack={() => handleBack('quiz')}
+          />
+        )
       )}
 
       {screen === 'results' && quizResult && (
