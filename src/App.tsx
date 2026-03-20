@@ -24,8 +24,17 @@ export default function App() {
     questionCount: 5,
     timeLimit: 30,
   });
+  const defaultApiKey =
+    import.meta.env.VITE_GROQ_API_KEY ||
+    import.meta.env.VITE_API_KEY ||
+    '';
+
   const [apiKey, setApiKey] = useState<string>(() => {
-    try { return localStorage.getItem(STORAGE_KEY) || ''; } catch { return ''; }
+    try {
+      return localStorage.getItem(STORAGE_KEY) || defaultApiKey;
+    } catch {
+      return defaultApiKey;
+    }
   });
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
@@ -47,10 +56,16 @@ export default function App() {
 
 
 
-  const handleSettingsDone = useCallback((s: Omit<QuizSettings, 'apiKey'>) => {
+  const handleSettingsDone = useCallback(async (s: Omit<QuizSettings, 'apiKey'>) => {
     setSettings(s);
-    setScreen('apikey');
-  }, []);
+
+    if (!apiKey.trim()) {
+      setScreen('apikey');
+      return;
+    }
+
+    await startQuiz(apiKey, s);
+  }, [apiKey, startQuiz]);
 
   const startQuiz = useCallback(async (key: string, quizSettings: Omit<QuizSettings, 'apiKey'>) => {
     const fullSettings: QuizSettings = { ...quizSettings, apiKey: key };

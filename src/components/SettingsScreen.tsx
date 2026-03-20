@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { QuizSettings, Category, Difficulty, TimeLimit } from '../types/quiz';
 
 interface SettingsScreenProps {
-  onContinue: (settings: Omit<QuizSettings, 'apiKey'>) => void;
+  onContinue: (settings: Omit<QuizSettings, 'apiKey'>) => void | Promise<void>;
   initialSettings?: Omit<QuizSettings, 'apiKey'>;
   onBack?: () => void;
 }
