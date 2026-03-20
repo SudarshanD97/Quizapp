@@ -10,6 +10,7 @@ interface ResultsScreenProps {
   onRetry: () => void;
   onNewQuiz: () => void;
   onLeaderboard: () => void;
+  onBack?: () => void;
 }
 
 type Tab = 'overview' | 'review' | 'weaknesses' | 'learn';
@@ -21,7 +22,7 @@ const RESOURCE_TYPE_ICONS: Record<string, string> = {
   documentation: '📖',
 };
 
-export default function ResultsScreen({ result, user, onRetry, onNewQuiz, onLeaderboard }: ResultsScreenProps) {
+export default function ResultsScreen({ result, user, onRetry, onNewQuiz, onLeaderboard, onBack }: ResultsScreenProps) {
   const { questions, answers, settings } = result;
   const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -158,6 +159,17 @@ export default function ResultsScreen({ result, user, onRetry, onNewQuiz, onLead
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-6 pb-16">
+        {onBack && (
+          <div className="mb-6 flex items-center">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-70"
+              style={{ color: '#6e6e73' }}
+            >
+              <span aria-hidden>←</span> Back
+            </button>
+          </div>
+        )}
 
         {/* Score + Quick Stats */}
         <div

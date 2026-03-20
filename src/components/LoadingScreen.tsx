@@ -3,6 +3,7 @@ import type { QuizSettings } from '../types/quiz';
 
 interface LoadingScreenProps {
   settings: QuizSettings;
+  onBack?: () => void;
 }
 
 const loadingMessages = [
@@ -12,7 +13,7 @@ const loadingMessages = [
   'Almost ready — finalizing answers...',
 ];
 
-export default function LoadingScreen({ settings }: LoadingScreenProps) {
+export default function LoadingScreen({ settings, onBack }: LoadingScreenProps) {
   const [msgIdx, setMsgIdx] = useState(0);
   const [dots, setDots] = useState('');
 
@@ -36,6 +37,17 @@ export default function LoadingScreen({ settings }: LoadingScreenProps) {
       className="min-h-screen w-full flex flex-col items-center justify-center px-6"
       style={{ background: '#f5f5f7' }}
     >
+      {onBack && (
+        <div className="w-full max-w-lg flex justify-start mb-8">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-70"
+            style={{ color: '#6e6e73' }}
+          >
+            <span aria-hidden>←</span> Back
+          </button>
+        </div>
+      )}
       <div className="flex flex-col items-center gap-10 max-w-lg w-full animate-fade-in">
 
         {/* Animated Loader */}

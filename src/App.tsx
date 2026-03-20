@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { AppScreen, QuizSettings, QuizQuestion, QuizAnswer, QuizResult, GoogleUser, UserStreak } from './types/quiz';
 import LandingScreen from './components/LandingScreen';
 import SettingsScreen from './components/SettingsScreen';
@@ -17,6 +17,8 @@ const STORAGE_KEY = 'quizai_api_key';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('landing');
+  const [prevScreen, setPrevScreen] = useState<AppScreen | null>(null);
+  const screenRef = useRef<AppScreen>(screen);
   const [settings, setSettings] = useState<Omit<QuizSettings, 'apiKey'>>({
     topic: '',
     category: 'Technology',
@@ -48,6 +50,28 @@ export default function App() {
     setStreak(getStreak());
   }, []);
 
+  // Keep a ref of the current screen for reliable navigation helpers.
+  useEffect(() => {
+    screenRef.current = screen;
+  }, [screen]);
+
+  const navigate = useCallback((next: AppScreen) => {
+    setPrevScreen(screenRef.current);
+    setScreen(next);
+  }, []);
+
+  const handleBack = useCallback(
+    (source: AppScreen) => {
+      // "loading" is an intermediate state; when returning from quiz, skip it.
+      if (source === 'quiz' && prevScreen === 'loading') {
+        navigate(apiKey.trim() ? 'settings' : 'apikey');
+        return;
+      }
+      navigate(prevScreen ?? 'landing');
+    },
+    [apiKey, navigate, prevScreen],
+  );
+
   const handleAuth = useCallback((newUser: GoogleUser) => {
     setUser(newUser);
     saveUser(newUser);
@@ -60,7 +84,7 @@ export default function App() {
     setSettings(s);
 
     if (!apiKey.trim()) {
-      setScreen('apikey');
+      navigate('apikey');
       return;
     }
 
@@ -69,16 +93,16 @@ export default function App() {
 
   const startQuiz = useCallback(async (key: string, quizSettings: Omit<QuizSettings, 'apiKey'>) => {
     const fullSettings: QuizSettings = { ...quizSettings, apiKey: key };
-    setScreen('loading');
+    navigate('loading');
     setError('');
     try {
       const qs = await generateQuizQuestions(fullSettings);
       setQuestions(qs);
-      setScreen('quiz');
+      navigate('quiz');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to generate questions. Please try again.';
       setError(msg);
-      setScreen('apikey');
+      navigate('apikey');
     }
   }, []);
 
@@ -119,7 +143,7 @@ export default function App() {
       });
     }
 
-    setScreen('results');
+    navigate('results');
   }, [settings, apiKey, questions, user]);
 
   const handleRetry = useCallback(async () => {
@@ -129,13 +153,13 @@ export default function App() {
   const handleNewQuiz = useCallback(() => {
     setQuestions([]);
     setQuizResult(null);
-    setScreen('settings');
+    navigate('settings');
   }, []);
 
   const handleCollabHost = useCallback(async (code: string, collabSettings: Omit<QuizSettings, 'apiKey'>) => {
     setSettings({ ...collabSettings, collabCode: code } as any);
     if (!apiKey) {
-      setScreen('apikey');
+      navigate('apikey');
       return;
     }
     await startQuiz(apiKey, { ...collabSettings, collabCode: code } as any);
@@ -144,7 +168,7 @@ export default function App() {
   const handleCollabJoin = useCallback((_code: string) => {
     // In a real app with backend, we'd sync via WebSockets
     // For demo: just go to settings then start
-    setScreen('settings');
+    navigate('settings');
   }, []);
 
   return (
@@ -161,10 +185,10 @@ export default function App() {
         <LandingScreen
           user={user}
           streak={streak}
-          onStart={() => setScreen('settings')}
+          onStart={() => navigate('settings')}
           onSignIn={() => setShowAuthModal(true)}
-          onLeaderboard={() => setScreen('leaderboard')}
-          onCollab={() => setScreen('collab')}
+          onLeaderboard={() => navigate('leaderboard')}
+          onCollab={() => navigate('collab')}
         />
       )}
 
@@ -172,20 +196,25 @@ export default function App() {
         <SettingsScreen
           onContinue={handleSettingsDone}
           initialSettings={settings}
-          onBack={() => setScreen('landing')}
+          onBack={() => navigate('landing')}
         />
       )}
 
       {screen === 'apikey' && (
         <ApiKeyScreen
-          onBack={() => setScreen('settings')}
+          onBack={() => navigate('settings')}
           onStart={handleApiKeyDone}
           savedKey={apiKey}
           error={error}
         />
       )}
 
-      {screen === 'loading' && <LoadingScreen settings={settings as QuizSettings} />}
+      {screen === 'loading' && (
+        <LoadingScreen
+          settings={settings as QuizSettings}
+          onBack={() => handleBack('loading')}
+        />
+      )}
 
       {screen === 'quiz' && questions.length > 0 && (
         <QuizScreen
@@ -194,6 +223,7 @@ export default function App() {
           onComplete={handleQuizComplete}
           userName={user?.displayName}
           userPhoto={user?.photoURL}
+          onBack={() => handleBack('quiz')}
         />
       )}
 
@@ -203,7 +233,8 @@ export default function App() {
           user={user}
           onRetry={handleRetry}
           onNewQuiz={handleNewQuiz}
-          onLeaderboard={() => setScreen('leaderboard')}
+          onLeaderboard={() => navigate('leaderboard')}
+          onBack={() => handleBack('results')}
         />
       )}
 
@@ -211,7 +242,7 @@ export default function App() {
         <LeaderboardScreen
           user={user}
           streak={streak}
-          onBack={() => setScreen(quizResult ? 'results' : 'landing')}
+          onBack={() => navigate(quizResult ? 'results' : 'landing')}
         />
       )}
 
@@ -220,7 +251,7 @@ export default function App() {
           user={user}
           onJoinAsHost={handleCollabHost}
           onJoinAsGuest={handleCollabJoin}
-          onBack={() => setScreen('landing')}
+          onBack={() => navigate('landing')}
         />
       )}
     </div>

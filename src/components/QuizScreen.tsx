@@ -5,6 +5,7 @@ interface QuizScreenProps {
   questions: QuizQuestion[];
   settings: QuizSettings;
   onComplete: (answers: QuizAnswer[]) => void;
+  onBack?: () => void;
   userName?: string;
   userPhoto?: string;
 }
@@ -13,7 +14,7 @@ type AnswerState = 'idle' | 'correct' | 'wrong' | 'timeout';
 
 const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
-export default function QuizScreen({ questions, settings, onComplete, userName, userPhoto }: QuizScreenProps) {
+export default function QuizScreen({ questions, settings, onComplete, onBack, userName, userPhoto }: QuizScreenProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [answerState, setAnswerState] = useState<AnswerState>('idle');
@@ -250,6 +251,15 @@ export default function QuizScreen({ questions, settings, onComplete, userName, 
       {/* ── Top Bar ── */}
       <div className="w-full glass sticky top-0 z-40 border-b border-white/60">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-4">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="flex-shrink-0 font-semibold transition-opacity hover:opacity-70"
+              style={{ color: '#6e6e73' }}
+            >
+              ← Back
+            </button>
+          )}
           {/* User avatar */}
           {(userName || userPhoto) && (
             <div className="flex items-center gap-2 flex-shrink-0">
