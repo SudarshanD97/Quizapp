@@ -131,7 +131,7 @@ export default function ResultsScreen({ result, user, onRetry, onNewQuiz, onLead
   ];
 
   return (
-    <div className="min-h-screen w-full" style={{ background: '#f5f5f7' }}>
+    <div className="min-h-screen w-full" style={{ background: '#f5f5f7', position: 'relative' }}>
 
       {/* Hero Banner */}
       <div
@@ -143,6 +143,19 @@ export default function ResultsScreen({ result, user, onRetry, onNewQuiz, onLead
           transition: 'all 0.6s cubic-bezier(0.34, 1.2, 0.64, 1)',
         }}
       >
+        {/* Back overlay (always visible, not affected by -mt-6 layout) */}
+        {onBack && (
+          <div style={{ position: 'absolute', left: 16, top: 18, zIndex: 5 }}>
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-80"
+              style={{ color: 'white' }}
+            >
+              <span aria-hidden style={{ fontSize: '1.05rem', lineHeight: 1 }}>←</span> Back
+            </button>
+          </div>
+        )}
+
         <div className="text-7xl mb-3 animate-bounce-subtle">{grade.emoji}</div>
         <h1 className="text-5xl sm:text-6xl font-black mb-2 text-white" style={{ letterSpacing: '-0.04em' }}>
           {grade.label}
@@ -159,17 +172,6 @@ export default function ResultsScreen({ result, user, onRetry, onNewQuiz, onLead
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-6 pb-16">
-        {onBack && (
-          <div className="mb-6 flex items-center">
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-70"
-              style={{ color: '#6e6e73' }}
-            >
-              <span aria-hidden>←</span> Back
-            </button>
-          </div>
-        )}
 
         {/* Score + Quick Stats */}
         <div

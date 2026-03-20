@@ -28,7 +28,7 @@ const TIME_OPTIONS: { value: TimeLimit; label: string }[] = [
   { value: 60, label: '60s' },
 ];
 
-export default function SettingsScreen({ onContinue, initialSettings, onBack: _onBack, error }: SettingsScreenProps) {
+export default function SettingsScreen({ onContinue, initialSettings, onBack, error }: SettingsScreenProps) {
   const [topic, setTopic] = useState(initialSettings?.topic ?? '');
   const [category, setCategory] = useState<Category>(initialSettings?.category ?? 'Technology');
   const [difficulty, setDifficulty] = useState<Difficulty>(initialSettings?.difficulty ?? 'medium');
@@ -43,6 +43,19 @@ export default function SettingsScreen({ onContinue, initialSettings, onBack: _o
     <div className="min-h-screen w-full flex flex-col items-center justify-start pt-10 px-4 pb-16"
       style={{ background: '#f5f5f7' }}>
 
+      {/* Back button (optional) */}
+      {onBack && (
+        <div className="w-full max-w-3xl mb-6">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-70"
+            style={{ color: '#6e6e73' }}
+          >
+            <span aria-hidden>←</span> Back
+          </button>
+        </div>
+      )}
+
       {/* Header / Step Indicator */}
       <div className="w-full max-w-3xl mb-8 animate-fade-in-up">
         <div className="flex items-center gap-4 mb-8">
@@ -52,11 +65,6 @@ export default function SettingsScreen({ onContinue, initialSettings, onBack: _o
             <span className="font-semibold text-xl" style={{ color: '#1d1d1f' }}>Quiz Settings</span>
           </div>
           <div className="flex-1 h-px" style={{ background: '#d2d2d7' }} />
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg border-2"
-              style={{ background: 'transparent', color: '#6e6e73', borderColor: '#d2d2d7' }}>2</div>
-            <span className="font-medium text-xl" style={{ color: '#6e6e73' }}>API Key</span>
-          </div>
         </div>
       </div>
 
