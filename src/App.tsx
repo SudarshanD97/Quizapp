@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { AppScreen, QuizSettings, QuizQuestion, QuizAnswer, QuizResult, GoogleUser, UserStreak } from './types/quiz';
 import LandingScreen from './components/LandingScreen';
 import SettingsScreen from './components/SettingsScreen';
@@ -17,8 +17,6 @@ const STORAGE_KEY = 'quizai_api_key';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('landing');
-  const [prevScreen, setPrevScreen] = useState<AppScreen | null>(null);
-  const screenRef = useRef<AppScreen>(screen);
   const [settings, setSettings] = useState<Omit<QuizSettings, 'apiKey'>>({
     topic: '',
     category: 'Technology',
@@ -50,27 +48,9 @@ export default function App() {
     setStreak(getStreak());
   }, []);
 
-  // Keep a ref of the current screen for reliable navigation helpers.
-  useEffect(() => {
-    screenRef.current = screen;
-  }, [screen]);
-
   const navigate = useCallback((next: AppScreen) => {
-    setPrevScreen(screenRef.current);
     setScreen(next);
   }, []);
-
-  const handleBack = useCallback(
-    (source: AppScreen) => {
-      // "loading" is an intermediate state; when returning from quiz, skip it.
-      if (source === 'quiz' && prevScreen === 'loading') {
-        navigate('settings');
-        return;
-      }
-      navigate(prevScreen ?? 'landing');
-    },
-    [apiKey, navigate, prevScreen],
-  );
 
   const handleAuth = useCallback((newUser: GoogleUser) => {
     setUser(newUser);
@@ -213,7 +193,7 @@ export default function App() {
       {screen === 'loading' && (
         <LoadingScreen
           settings={settings as QuizSettings}
-          onBack={() => handleBack('loading')}
+          onBack={() => navigate('landing')}
         />
       )}
 
@@ -230,7 +210,7 @@ export default function App() {
         ) : (
           <LoadingScreen
             settings={settings as QuizSettings}
-            onBack={() => handleBack('quiz')}
+            onBack={() => navigate('landing')}
           />
         )
       )}
@@ -242,7 +222,7 @@ export default function App() {
           onRetry={handleRetry}
           onNewQuiz={handleNewQuiz}
           onLeaderboard={() => navigate('leaderboard')}
-          onBack={() => handleBack('results')}
+          onBack={() => navigate('landing')}
         />
       )}
 
