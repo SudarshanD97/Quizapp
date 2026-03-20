@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+/* ── Fonts ───────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d2d2d7; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #aeaeb2; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Glassmorphism ──────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* ── Animations ─────────────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%  { transform: translateX(-8px); }
+  30%  { transform: translateX(7px); }
+  45%  { transform: translateX(-6px); }
+  60%  { transform: translateX(5px); }
+  75%  { transform: translateX(-3px); }
+  90%  { transform: translateX(2px); }
+}
+
+@keyframes bounceSubtle {
+  0%, 100% { transform: translateY(0); }
+  30%  { transform: translateY(-10px); }
+  60%  { transform: translateY(-4px); }
+  80%  { transform: translateY(-7px); }
+}
+
+@keyframes bounceIn {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.25); opacity: 1; }
+  75%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ping {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%  { opacity: 0.5; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%  { transform: translateY(-12px); }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Animation Classes ──────────────────────────────────────────── */
+.animate-fade-in-up   { animation: fadeInUp 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
+.animate-scale-in     { animation: scaleIn 0.4s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
+.animate-pop          { animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-shake        { animation: shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+.animate-bounce-subtle{ animation: bounceSubtle 0.7s ease both; }
+.animate-bounce-in    { animation: bounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-ping         { animation: ping 0.9s cubic-bezier(0, 0, 0.2, 1) both; }
+.animate-pulse        { animation: pulse 1.6s ease-in-out infinite; }
+.animate-spin         { animation: spin 1s linear infinite; }
+.animate-float        { animation: float 3s ease-in-out infinite; }
+.animate-slide-in-right { animation: slideInRight 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
+
+/* Shimmer loading */
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ── Option Button Hover ─────────────────────────────────────────── */
+.option-btn {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.option-btn:not(:disabled):hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+}
+
+.option-btn:not(:disabled):active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* ── Card Hover Effects ─────────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.card-hover:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Progress Bar ───────────────────────────────────────────────── */
+.progress-bar {
+  transition: width 0.7s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+/* ── Timer Ring ─────────────────────────────────────────────────── */
+.timer-ring {
+  transform-origin: center;
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+}
+
+/* ── Gradient Text ──────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #1d1d1f 0%, #6e6e73 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Button Base ────────────────────────────────────────────────── */
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ── Focus visible ──────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ── Selection color ────────────────────────────────────────────── */
+::selection {
+  background: #0071e330;
+  color: #1d1d1f;
+}
+
+/* ── Delay helpers ──────────────────────────────────────────────── */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* ── Page Transitions ───────────────────────────────────────────── */
+.page-enter {
+  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
