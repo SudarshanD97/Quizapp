@@ -78,19 +78,6 @@ export default function App() {
     setShowAuthModal(false);
   }, []);
 
-
-
-  const handleSettingsDone = useCallback(async (s: Omit<QuizSettings, 'apiKey'>) => {
-    setSettings(s);
-
-    if (!apiKey.trim()) {
-      navigate('apikey');
-      return;
-    }
-
-    await startQuiz(apiKey, s);
-  }, [apiKey, startQuiz]);
-
   const startQuiz = useCallback(async (key: string, quizSettings: Omit<QuizSettings, 'apiKey'>) => {
     const fullSettings: QuizSettings = { ...quizSettings, apiKey: key };
     navigate('loading');
@@ -105,6 +92,17 @@ export default function App() {
       navigate('apikey');
     }
   }, []);
+
+  const handleSettingsDone = useCallback(async (s: Omit<QuizSettings, 'apiKey'>) => {
+    setSettings(s);
+
+    if (!apiKey.trim()) {
+      navigate('apikey');
+      return;
+    }
+
+    await startQuiz(apiKey, s);
+  }, [apiKey, startQuiz]);
 
   const handleApiKeyDone = useCallback(async (key: string) => {
     setApiKey(key);
